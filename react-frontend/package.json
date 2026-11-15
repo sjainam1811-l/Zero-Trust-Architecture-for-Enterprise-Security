@@ -1,0 +1,32 @@
+{
+  "name": "zero-trust-auth-react",
+  "version": "1.0.0",
+  "description": "Zero-Trust Authentication Context and hooks for React",
+  "type": "module",
+  "main": "zero-trust-auth.jsx",
+  "author": "Kelvin Chipili",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/ibm-plex-sans": "^5.3.0",
+    "axios": "^1.6.5",
+    "chart.js": "^4.6.1",
+    "jwt-decode": "^4.0.0",
+    "lucide-react": "^1.73.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.6.2",
+    "postcss": "^8.5.33",
+    "tailwindcss": "^3.4.17",
+    "vite": "^5.1.0"
+  }
+}

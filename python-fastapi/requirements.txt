@@ -1,0 +1,12 @@
+# Zero-Trust Auth — Python / FastAPI dependencies
+# Install with: pip install -r requirements.txt
+
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+bcrypt<4.0.0                  # required for passlib compatibility
+pyotp>=2.9.0
+slowapi>=0.1.9
+structlog>=24.1.0
+python-multipart>=0.0.7   # required by FastAPI for form data

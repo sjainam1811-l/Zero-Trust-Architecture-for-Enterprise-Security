@@ -1,0 +1,147 @@
+version: '3.8'
+
+# ==============================================================================
+# Zero-Trust Architecture Enterprise Lab — Multi-Tier Topology
+# Implements Microsegmentation per NIST SP 800-207:
+# - frontend-net: Untrusted ingress and client-facing endpoints
+# - app-net:      Internal microservice mesh
+# - db-net:       Isolated persistence zone (completely unreachable from frontend-net)
+# ==============================================================================
+
+networks:
+  frontend-net:
+    driver: bridge
+    name: zt-frontend-net
+  app-net:
+    driver: bridge
+    name: zt-app-net
+  db-net:
+    driver: bridge
+    name: zt-db-net
+    internal: true # STRICT ISOLATION: No external gateway route
+
+volumes:
+  pgdata:
+    name: zt-pgdata
+  redisdata:
+    name: zt-redisdata
+
+services:
+  # ─── 1. FRONTEND: REACT CLIENT CONSOLE ────────────────────────
+  frontend:
+    build:
+      context: ./react-frontend
+      dockerfile: Dockerfile
+    container_name: zt-frontend
+    ports:
+      - "5173:5173"
+    networks:
+      - frontend-net
+    depends_on:
+      - auth-service
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:5173/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # ─── 2. AUTH SERVICE: NODE.JS / EXPRESS BACKEND ───────────────
+  auth-service:
+    build:
+      context: ./node-express
+      dockerfile: Dockerfile
+    container_name: zt-auth-service
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - JWT_ACCESS_SECRET=zt_access_secret_super_secure_key_32_chars_min!
+      - JWT_REFRESH_SECRET=zt_refresh_secret_super_secure_key_32_chars_min!
+      - DATA_ENCRYPTION_KEY=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgres://zerotrust_user:SecurePostgresPass2026!@database:5432/zerotrust_db
+    networks:
+      - frontend-net
+      - app-net
+      - db-net
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:4000/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ─── 3. APP API: PYTHON / FASTAPI BACKEND ─────────────────────
+  app-api:
+    build:
+      context: ./python-fastapi
+      dockerfile: Dockerfile
+    container_name: zt-app-api
+    ports:
+      - "8001:8001"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgres://zerotrust_user:SecurePostgresPass2026!@database:5432/zerotrust_db
+    networks:
+      - frontend-net
+      - app-net
+      - db-net
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:8001/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ─── 4. DATABASE: POSTGRESQL 16 (ISOLATED ZONE) ───────────────
+  database:
+    image: postgres:16-alpine
+    container_name: zt-database
+    environment:
+      - POSTGRES_USER=zerotrust_user
+      - POSTGRES_PASSWORD=SecurePostgresPass2026!
+      - POSTGRES_DB=zerotrust_db
+    networks:
+      - db-net
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zerotrust_user -d zerotrust_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ─── 5. REDIS: SECURITY STATE STORE (ISOLATED ZONE) ───────────
+  redis:
+    image: redis:7-alpine
+    container_name: zt-redis
+    networks:
+      - db-net
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ─── 6. ATTACKER: PENETRATION TESTING CONTAINER ───────────────
+  # Placed STRICTLY on frontend-net to test micro-segmentation
+  attacker:
+    build:
+      context: ./attacker
+      dockerfile: Dockerfile
+    container_name: zt-attacker
+    networks:
+      - frontend-net
+    depends_on:
+      - auth-service

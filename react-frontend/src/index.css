@@ -1,0 +1,271 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  color-scheme: light;
+}
+
+:root {
+  --bg-base: #F6F8FA;
+  --surface: #FFFFFF;
+  --raised: #F1F4F8;
+  --border: #D8DEE6;
+  --border-strong: #C3CBD6;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --accent-blue: #1D4ED8;
+  --accent-blue-hover: #1E40AF;
+  --accent-blue-soft: #EAF0FF;
+  --status-pass: #15803D;
+  --status-pass-bg: #E8F5EC;
+  --status-fail: #B91C1C;
+  --status-fail-bg: #FDECEC;
+  --status-warning: #B45309;
+  --status-warning-bg: #FEF3E2;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Monospace font strictly for tokens, hashes, IPs and code */
+code, pre, .font-mono {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-base);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
+
+/* Focus ring */
+*:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 1px;
+}
+
+/* Transitions */
+button, a, input, select, textarea {
+  transition-property: color, background-color, border-color, box-shadow, opacity;
+  transition-duration: 150ms;
+  transition-timing-function: ease-in-out;
+}
+
+/* Standard Buttons: 40px height, 8px radius, single line, 16px icon */
+.btn-primary {
+  height: 40px;
+  padding-left: 16px;
+  padding-right: 16px;
+  border-radius: 8px;
+  background-color: var(--accent-blue);
+  color: #FFFFFF;
+  font-weight: 500;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  border: none;
+  cursor: pointer;
+}
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--accent-blue-hover);
+}
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  height: 40px;
+  padding-left: 16px;
+  padding-right: 16px;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--raised);
+  border-color: var(--border-strong);
+}
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-danger {
+  height: 40px;
+  padding-left: 16px;
+  padding-right: 16px;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  border: 1px solid var(--status-fail);
+  color: var(--status-fail);
+  font-weight: 500;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.btn-danger:hover:not(:disabled) {
+  background-color: var(--status-fail-bg);
+}
+.btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Status pills: text plus tinted pill background with 1px border */
+.pill-pass {
+  color: var(--status-pass);
+  background-color: var(--status-pass-bg);
+  border: 1px solid rgba(21, 128, 61, 0.25);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.pill-fail {
+  color: var(--status-fail);
+  background-color: var(--status-fail-bg);
+  border: 1px solid rgba(185, 28, 28, 0.25);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.pill-warning {
+  color: var(--status-warning);
+  background-color: var(--status-warning-bg);
+  border: 1px solid rgba(180, 83, 9, 0.25);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+/* Form input defaults */
+input, select, textarea {
+  color: var(--text-primary);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+}
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent-blue);
+  outline: none;
+}
+
+/* Print Styles */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 8mm 10mm;
+  }
+
+  html, body {
+    height: auto !important;
+    background-color: #FFFFFF !important;
+    color: #0F172A !important;
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide navigation, header, sidebar, action buttons and tabs in print */
+  aside,
+  header,
+  nav,
+  .no-print,
+  button,
+  .tab-nav {
+    display: none !important;
+  }
+
+  main {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+  }
+
+  /* Prevent page breaks inside cards, tables, charts */
+  .print-avoid-break,
+  tr,
+  table,
+  canvas {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Clean print borders */
+  .border,
+  .border-b,
+  .border-t,
+  .border-r,
+  .border-l {
+    border-color: #D8DEE6 !important;
+  }
+
+  /* Single Page Print Container */
+  .print-single-page {
+    max-height: 275mm !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}
